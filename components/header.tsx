@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,6 +13,10 @@ export default function Header() {
     { href: "/meetings", text: "Meetings" },
     { href: "/groups", text: "Groups" },
   ];
+
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="bg-customBlue text-customWhite">
@@ -87,13 +92,23 @@ export default function Header() {
               </svg>
             </button>
             <ul className="hidden md:flex md:space-x-4">
-              {links.map((link, index) => (
-                <li key={index}>
-                  <Link href={link.href} className="hover:text-customYellow">
-                    {link.text}
+              <SignedIn>
+                {links.map((link, index) => (
+                  <li key={index}>
+                    <Link href={link.href} className="hover:text-customYellow">
+                      {link.text}
+                    </Link>
+                  </li>
+                ))}
+                <UserButton />
+              </SignedIn>
+              <SignedOut>
+                <li>
+                  <Link href="/sign-in" className="hover:text-customYellow">
+                    Sign In
                   </Link>
                 </li>
-              ))}
+              </SignedOut>
             </ul>
           </div>
         </div>
@@ -125,17 +140,39 @@ export default function Header() {
               </button>
             </div>
             <ul className="flex flex-col items-center space-y-8 mt-16">
-              {links.map((link, index) => (
-                <li key={index}>
+              <SignedIn>
+                {links.map((link, index) => (
+                  <li key={index}>
+                    <Link
+                      href={link.href}
+                      className="text-2xl hover:text-customYellow"
+                      onClick={handleLinkClick}
+                    >
+                      {link.text}
+                    </Link>
+                  </li>
+                ))}
+                <li>
                   <Link
-                    href={link.href}
+                    href="/sign-out"
                     className="text-2xl hover:text-customYellow"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={handleLinkClick}
                   >
-                    {link.text}
+                    Sign Out
                   </Link>
                 </li>
-              ))}
+              </SignedIn>
+              <SignedOut>
+                <li>
+                  <Link
+                    href="/sign-in"
+                    className="text-2xl hover:text-customYellow"
+                    onClick={handleLinkClick}
+                  >
+                    Sign In
+                  </Link>
+                </li>
+              </SignedOut>
             </ul>
           </div>
         </div>
